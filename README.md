@@ -18,7 +18,7 @@ This script provide an extensive validation and reconfiguration of an existing s
 ![Menu](docs/images/menu.PNG)
 
 ### Execution
-![Execution](docs/images/precheck.png)
+![Execution](docs/images/Automatic Rapir.PNG)
 
 ### Result
 ![Result](docs/images/result.png)
