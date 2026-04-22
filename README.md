@@ -167,12 +167,12 @@ The tool **only injects required drivers per target hypervisor**:
 ### Fix Windows format issues
 
 ```bash
-sed -i 's/\r$//' prep-tool.sh
+sed -i 's/\r$//' PrepTooLMultiHypervisorV1.2.sh
 
 Grant permissions
 chmod +x prep-tool.sh
 Run
-sudo ./prep-tool.sh
+sudo ./PrepTooLMultiHypervisorV1.2.sh
 🌍 Language Selection
 
 At startup:
@@ -246,7 +246,7 @@ KVM/AHV:
 lsmod | grep virtio
 ⚠️ Common Errors
 ❌ bad interpreter
-sed -i 's/\r$//' prep-tool.sh
+sed -i 's/\r$//' PrepTooLMultiHypervisorV1.2.sh
 ❌ dracut shell
 Missing drivers
 Re-run tool
