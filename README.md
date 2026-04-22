@@ -14,6 +14,10 @@ This script provide an extensive validation and reconfiguration of an existing s
 ![Demo](docs/images/demo.gif)
 ## 📸 Screenshots
 
+### Error when migrate VM whitout script execution
+![Error After Veeam Instant Recovery](docs/images/error.PNG)
+
+
 ### Menu
 ![Menu](docs/images/menu.PNG)
 
