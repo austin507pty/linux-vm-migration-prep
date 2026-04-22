@@ -15,7 +15,7 @@ This script provide an extensive validation and reconfiguration of an existing s
 ## 📸 Screenshots
 
 ### Menu
-![Menu](docs/images/menu.png)
+![Menu](docs/images/menu.PNG)
 
 ### Execution
 ![Execution](docs/images/precheck.png)
