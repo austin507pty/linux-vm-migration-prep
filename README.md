@@ -92,13 +92,20 @@ If required drivers are not present in `initramfs`:
 
 ---
 
-## 🚀 Execution
+---
+## ⚠️ IMPORTANT CONSIDERATIONS ⚠️
 
-### 1. Fix script format (if copied from Windows)
 ⚠️***** YOU MUST HAVE AT LEAST ONE FULL RESTORE POINT OR RECENTLY CREATED AN INCREMENTAL BACKUP FOR ROLL BACK ON VEEAM **** ⚠️
 ⚠️***** YOU CAN CREATE AN VM SNAPSHOT FOR ROLL BACK JUST IN CASE **** ⚠️
 ⚠️***** ALL THESE STEPS MUST BE EXECUTED IN THE VM ON THE PRODUCTION SIDE **** ⚠️
 ⚠️***** AFTER EXECUTION YOU NEED TO RUN AN INCREMENTAL BACKUP  AND USE THIS RESTORE POINT FOR THE INSTANT RECOVER RESTORATION PROCESS**** ⚠️
+
+
+
+---
+## 🚀 Execution
+
+### 1. Fix script format (if copied from Windows)
 
 bash
 sed -i 's/\r$//' prep-tool.sh
