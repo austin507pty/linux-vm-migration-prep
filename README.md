@@ -9,6 +9,19 @@ This script provide an extensive validation and reconfiguration of an existing s
 ![License](https://img.shields.io/badge/License-MIT-yellow)
 
 ---
+## 🎬 Demo
+
+![Demo](docs/images/demo.gif)
+## 📸 Screenshots
+
+### Menu
+![Menu](docs/images/menu.png)
+
+### Execution
+![Execution](docs/images/precheck.png)
+
+### Result
+![Result](docs/images/result.png)
 
 ## 🧠 Overview
 
@@ -83,7 +96,7 @@ If required drivers are not present in `initramfs`:
 
 ### 1. Fix script format (if copied from Windows)
 
-```bash
+bash
 sed -i 's/\r$//' prep-tool.sh
 2. Grant execution permissions
 chmod +x prep-tool.sh
@@ -189,4 +202,23 @@ MIT License
 
 This tool transforms VM migration into a predictable, repeatable, and low-risk process, reducing boot failures and operational incidents.
 
+## ⚠️ Disclaimer
+
+This tool modifies initramfs and system boot configuration.
+
+Use only if you understand the implications.
+Always test before production use.
+
+## 🤔 Why this tool?
+
+Cross-hypervisor migrations often fail due to missing drivers in initramfs.
+
+This tool solves that problem in a predictable and automated way.
+
+
+## 🤝 Contributing
+
+Pull requests are welcome.
+
+For major changes, please open an issue first.
 
