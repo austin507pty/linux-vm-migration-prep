@@ -55,6 +55,65 @@ If required drivers are not present in `initramfs`:
 - ❌ System drops into dracut emergency shell  
 
 ---
+## 🧩 What is initramfs and why it matters?
+
+The **initramfs (Initial RAM Filesystem)** is a temporary root filesystem loaded into memory during the early Linux boot process.
+
+### ⚙️ What does it do?
+- Loads essential drivers before the OS starts
+- Detects storage devices (disks, LVM, RAID)
+- Prepares the system to mount the real root filesystem
+
+### 🚨 Why is it critical for migrations?
+When a VM is moved between hypervisors, the virtual hardware changes.  
+If the required drivers are NOT present in initramfs:
+
+- ❌ Root disk is not detected  
+- ❌ System cannot mount `/`  
+- ❌ Boot fails (dracut emergency shell)  
+
+### 🔗 How this tool integrates
+
+This tool ensures that:
+
+- Required drivers (e.g. `hv_*`, `virtio_*`) are present  
+- initramfs is rebuilt correctly  
+- The system can boot in the new hypervisor  
+
+👉 In short: **initramfs determines whether your VM boots or not after migration**
+
+## ⚙️ What is dracut and how this tool uses it?
+
+**dracut** is a Linux utility used to generate and rebuild the initramfs image dynamically.
+
+### ⚙️ What does dracut do?
+- Builds initramfs images based on system configuration
+- Includes required kernel modules (drivers)
+- Adapts boot logic to current hardware
+
+### 🚨 Why is it important?
+
+By default, dracut builds initramfs based on the CURRENT environment (e.g., VMware).
+
+👉 This means:
+- Hyper-V or KVM drivers may NOT be included
+- The system may fail after migration
+
+### 🔧 How this tool uses dracut
+
+This tool:
+
+- Forces inclusion of target hypervisor drivers  
+- Rebuilds initramfs safely  
+- Creates backups before changes  
+- Applies rollback if something fails  
+
+### 🧠 Key advantage
+
+Instead of relying on default behavior, the tool makes dracut:
+
+```text
+predictable + controlled + migration-aware
 
 ## ⚙️ Key Features
 
