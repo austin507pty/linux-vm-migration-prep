@@ -22,7 +22,7 @@
 ![Menu](docs/images/menu.PNG)
 
 ### Execution
-![Execution](docs/images/AutomaticRapir.PNG)
+![Execution](docs/images/execution.PNG)
 
 ### Result
 ![Result](docs/images/resultsvalidation.png)
