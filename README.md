@@ -1,6 +1,3 @@
-# linux-vm-migration-prep.
-This script provide an extensive validation and reconfiguration of an existing server Backed Up with Veeam Backup, and prepare it for migrate to another hypervisor using Instant Recovery, adding drivers needed in the initramfs images for all kernels tested on (Oracle Linux, RHEL, Centos included the UEK Kernels)
-
 # 🚀 Linux VM Migration Prep Tool (Multi-Hypervisor)
 
 ![Linux](https://img.shields.io/badge/Linux-RHEL%2FOL%2FCentOS-blue)
@@ -9,14 +6,17 @@ This script provide an extensive validation and reconfiguration of an existing s
 ![License](https://img.shields.io/badge/License-MIT-yellow)
 
 ---
+
 ## 🎬 Demo
 
 ![Demo](docs/images/demo.gif)
+
+---
+
 ## 📸 Screenshots
 
-### Error when migrate VM whitout script execution
-![Error After Veeam Instant Recovery](docs/images/error.PNG)
-
+### Error when migrating without preparation
+![Error](docs/images/error.PNG)
 
 ### Menu
 ![Menu](docs/images/menu.PNG)
@@ -27,6 +27,8 @@ This script provide an extensive validation and reconfiguration of an existing s
 ### Result
 ![Result](docs/images/resultsvalidation.png)
 
+---
+
 ## 🧠 Overview
 
 This tool prepares Linux virtual machines for **cross-hypervisor migration**, ensuring the system boots successfully after being moved from VMware to:
@@ -35,7 +37,14 @@ This tool prepares Linux virtual machines for **cross-hypervisor migration**, en
 - Proxmox (KVM)  
 - Nutanix AHV  
 
-It validates system readiness, injects required drivers into `initramfs`, and simulates boot conditions to reduce migration risks.
+It performs:
+
+- system validation  
+- driver injection into `initramfs`  
+- boot simulation  
+- safe remediation  
+
+👉 Result: **predictable and low-risk migrations**
 
 ---
 
@@ -48,86 +57,84 @@ When migrating between hypervisors, the virtual hardware changes:
 | vmxnet3 | hv_netvsc / virtio_net |
 | pvscsi | hv_storvsc / virtio_scsi |
 
-If required drivers are not present in `initramfs`:
+If required drivers are NOT present in `initramfs`:
 
 - ❌ VM fails to boot  
 - ❌ Root disk not detected  
 - ❌ System drops into dracut emergency shell  
 
 ---
-## 🧩 What is initramfs and why it matters?
 
-The **initramfs (Initial RAM Filesystem)** is a temporary root filesystem loaded into memory during the early Linux boot process.
+## 🧩 initramfs (Why it matters)
 
-### ⚙️ What does it do?
-- Loads essential drivers before the OS starts
-- Detects storage devices (disks, LVM, RAID)
-- Prepares the system to mount the real root filesystem
+The **initramfs** is a temporary filesystem loaded at boot.
 
-### 🚨 Why is it critical for migrations?
-When a VM is moved between hypervisors, the virtual hardware changes.  
-If the required drivers are NOT present in initramfs:
+### It is responsible for:
 
-- ❌ Root disk is not detected  
-- ❌ System cannot mount `/`  
-- ❌ Boot fails (dracut emergency shell)  
+- Loading storage and network drivers  
+- Detecting disks and LVM  
+- Mounting the root filesystem  
 
-### 🔗 How this tool integrates
+👉 If it lacks correct drivers → system will NOT boot
 
-This tool ensures that:
+---
 
-- Required drivers (e.g. `hv_*`, `virtio_*`) are present  
-- initramfs is rebuilt correctly  
-- The system can boot in the new hypervisor  
+## ⚙️ dracut (How it works here)
 
-👉 In short: **initramfs determines whether your VM boots or not after migration**
+**dracut** builds the initramfs dynamically.
 
-## ⚙️ What is dracut and how this tool uses it?
+### Problem:
+It builds based on CURRENT environment (VMware)
 
-**dracut** is a Linux utility used to generate and rebuild the initramfs image dynamically.
+### Solution (this tool):
 
-### ⚙️ What does dracut do?
-- Builds initramfs images based on system configuration
-- Includes required kernel modules (drivers)
-- Adapts boot logic to current hardware
+- Forces target drivers
+- Rebuilds initramfs safely
+- Applies rollback if needed
 
-### 🚨 Why is it important?
+👉 Makes boot process **predictable and migration-aware**
 
-By default, dracut builds initramfs based on the CURRENT environment (e.g., VMware).
-
-👉 This means:
-- Hyper-V or KVM drivers may NOT be included
-- The system may fail after migration
-
-### 🔧 How this tool uses dracut
-
-This tool:
-
-- Forces inclusion of target hypervisor drivers  
-- Rebuilds initramfs safely  
-- Creates backups before changes  
-- Applies rollback if something fails  
-
-### 🧠 Key advantage
-
-Instead of relying on default behavior, the tool makes dracut:
-
-```text
-predictable + controlled + migration-aware
+---
 
 ## ⚙️ Key Features
 
 - ✅ Pre-check validation (non-intrusive)
-- 🔧 Automated fix (driver injection + initramfs rebuild)
-- 🔁 Rollback protection (initramfs backup)
-- 🧪 Boot simulation (predictive validation)
+- 🔧 Automated fix (driver injection + rebuild)
+- 🔁 Rollback protection
+- 🧪 Boot predictor
 - 🌐 Multi-hypervisor support
-- 🌍 Multi-language (English / Spanish)
+- 🌍 Multi-language (EN / ES)
+- 🧹 Safe `/boot` cleanup
+- ⚠️ Guided kernel removal (safe mode)
 - 📜 Centralized logging
 
 ---
 
-## 🖥️ Supported Operating Systems
+## 🧠 Smart Driver Isolation (v1.2)
+
+The tool **only injects required drivers per target hypervisor**:
+
+### Hyper-V
+- hv_storvsc
+- hv_vmbus
+- hv_utils
+- hv_netvsc
+
+### KVM / AHV
+- virtio_blk
+- virtio_pci
+- virtio_net
+- virtio_scsi
+
+### Additionally:
+
+- ❌ Unused drivers are explicitly omitted
+- ❌ Prevents mixed driver environments
+- ✔ Cleaner and safer initramfs
+
+---
+
+## 🖥️ Supported OS
 
 - Oracle Linux  
 - RHEL  
@@ -137,11 +144,11 @@ predictable + controlled + migration-aware
 
 ---
 
-## 👤 Who Should Use This Tool?
+## 👤 Who Should Use This?
 
-- Linux System Administrators  
+- Linux Administrators  
 - Virtualization Engineers  
-- Infrastructure / Cloud Engineers  
+- Cloud / Infra Engineers  
 - Migration / DR teams  
 
 ---
@@ -149,150 +156,135 @@ predictable + controlled + migration-aware
 ## ⚠️ Requirements
 
 - Root access  
-- `/boot` must have at least **200MB free**  
-- `dracut`, `lvm2`, `rpm` available  
-- System must be RHEL-based  
+- `/boot` with **≥ 200MB free**  
+- dracut installed  
+- RHEL-based OS  
 
 ---
 
----
-## ⚠️ IMPORTANT CONSIDERATIONS ⚠️
-
-⚠️***** YOU MUST HAVE AT LEAST ONE FULL RESTORE POINT OR RECENTLY CREATED AN INCREMENTAL BACKUP FOR ROLL BACK ON VEEAM **** ⚠️
-⚠️***** YOU CAN CREATE AN VM SNAPSHOT FOR ROLL BACK JUST IN CASE **** ⚠️
-⚠️***** ALL THESE STEPS MUST BE EXECUTED IN THE VM ON THE PRODUCTION SIDE **** ⚠️
-⚠️***** AFTER EXECUTION YOU NEED TO RUN AN INCREMENTAL BACKUP  AND USE THIS RESTORE POINT FOR THE INSTANT RECOVER RESTORATION PROCESS**** ⚠️
-
-
-
----
 ## 🚀 Execution
 
-### 1. Fix script format (if copied from Windows)
+### Fix Windows format issues
 
-bash
+```bash
 sed -i 's/\r$//' prep-tool.sh
-2. Grant execution permissions
+
+Grant permissions
 chmod +x prep-tool.sh
-3. Run as root
+Run
 sudo ./prep-tool.sh
 🌍 Language Selection
 
-At startup, you can choose:
+At startup:
 
 1) English (default)
 2) Español
-🧭 Workflow
-
-Recommended execution flow:
-
-1) Select target hypervisor
-2) Run Pre-check
-3) Run AUTO
+🧭 Recommended Workflow
+1) Safe /boot cleanup (if needed)
+2) Pre-check
+3) AUTO
 🔄 Script Modes
 Mode	Description
-Pre-check	Validates system state
-FIX	Applies driver injection
-Post-check	Verifies corrections
-Boot Predictor	Simulates boot readiness
-AUTO	Runs full workflow
+Pre-check	Validate system
+FIX	Apply changes
+Post-check	Validate result
+Boot Predictor	Simulate boot
+AUTO	Full workflow
+Safe /boot cleanup	Free space safely
+Kernel warning	Suggest removal
 📂 Logs
 /var/log/prep-hyperv/latest.log
+🧹 Safe /boot Handling (v1.2)
+
+The tool safely handles /boot:
+
+Removes orphan initramfs
+Removes rescue files
+Keeps latest kernels
+If space is low:
+
+The tool will show:
+
+Required: 200MB
+Available: X MB
+⚠️ Guided Kernel Removal
+
+New safe mode:
+
+Does NOT remove anything automatically
+Suggests removable kernel
+Provides exact command
+
+Example:
+
+yum remove kernel-<version>
 🧪 Pre-Migration Steps (CRITICAL)
-
-Before migration:
-
 sync
 shutdown -h now
-🧠 Why sync?
-Flushes filesystem buffers
-Prevents data corruption
-Ensures disk consistency
+Why sync?
+Flush filesystem buffers
+Prevent corruption
+Ensure consistency
 🖥️ Hypervisor Configuration
-Setting	Recommendation
+Setting	Value
 Disk	VHDX
 Controller	SCSI
 Type	Dynamic
 Firmware	Same as source
-🔍 Firmware Check (BIOS / UEFI)
+🔍 Firmware Detection
 [ -d /sys/firmware/efi ] && echo UEFI || echo BIOS
 Result	Use
-BIOS	Gen1 VM
-UEFI	Gen2 VM
+BIOS	Gen1
+UEFI	Gen2
 
-⚠️ Do not change firmware type during migration
+⚠️ Do NOT change firmware
 
 🧪 Post-Migration Validation
-lsmod | grep -E 'hv_|virtio'
-⚠️ Common Errors & Solutions
-❌ bad interpreter: /bin/bash^M
-
-Cause: Windows line endings
-
-✔ Fix:
-
+Hyper-V:
+lsmod | grep hv_
+KVM/AHV:
+lsmod | grep virtio
+⚠️ Common Errors
+❌ bad interpreter
 sed -i 's/\r$//' prep-tool.sh
-❌ dracut emergency shell
-
-Cause: Missing drivers in initramfs
-
-✔ Fix:
-
-Re-run script
-Validate drivers:
-lsinitrd -k $(uname -r) | grep -E 'hv_|virtio'
-❌ Root disk not found
-
-Cause: Storage driver mismatch
-
-✔ Fix:
-
-Ensure correct hypervisor selected
-Validate driver injection
-⚠️ Low space in /boot
-
-✔ Fix:
-
-Remove old kernels:
-
-package-cleanup --oldkernels --count=2 -y
-🔐 Safety & Design
-✔ Non-destructive by default
-✔ Does NOT remove existing drivers
-✔ Uses native dracut
-✔ Automatic rollback if failure occurs
-⚠️ Important Considerations
-Always test in non-production first
-Do NOT mix hypervisor drivers unnecessarily
-Ensure fallback kernel exists
-Maintain original VM configuration
+❌ dracut shell
+Missing drivers
+Re-run tool
+❌ Low /boot space
+Use cleanup
+Use kernel warning
+🔐 Safety Design
+✔ Non-destructive
+✔ No automatic kernel removal
+✔ Rollback included
+✔ Controlled execution
 🎯 Expected Result
-✅ VM READY FOR MIGRATION
+VM READY FOR MIGRATION
+⚠️ Important Considerations
+Always test first
+Do NOT mix hypervisor drivers
+Keep fallback kernel
+Keep firmware consistent
 📜 License
 
-MIT License
+MIT
 
-⭐ Final Note
+🤔 Why this tool?
 
-This tool transforms VM migration into a predictable, repeatable, and low-risk process, reducing boot failures and operational incidents.
+Cross-hypervisor migrations fail due to missing drivers.
 
-## ⚠️ Disclaimer
+👉 This tool makes migrations:
 
-This tool modifies initramfs and system boot configuration.
-
-Use only if you understand the implications.
-Always test before production use.
-
-## 🤔 Why this tool?
-
-Cross-hypervisor migrations often fail due to missing drivers in initramfs.
-
-This tool solves that problem in a predictable and automated way.
-
-
-## 🤝 Contributing
+predictable
+repeatable
+safe
+🤝 Contributing
 
 Pull requests are welcome.
 
-For major changes, please open an issue first.
+⚠️ Disclaimer
+
+This tool modifies initramfs and boot configuration.
+
+Use responsibly and test before production.
 
