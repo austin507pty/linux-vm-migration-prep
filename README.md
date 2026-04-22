@@ -21,7 +21,7 @@ This script provide an extensive validation and reconfiguration of an existing s
 ![Execution](docs/images/AutomaticRapir.PNG)
 
 ### Result
-![Result](docs/images/result.png)
+![Result](docs/images/resultsvalidation.png)
 
 ## 🧠 Overview
 
